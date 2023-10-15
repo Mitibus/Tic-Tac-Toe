@@ -22,14 +22,15 @@ class Player:
             for j in range(3):
                 if board[i][j] == '':
                     board[i][j] = self.symbol
-                    score = self.minimax(board, 0, False, alpha, beta)
+                    score = self.minimax(
+                        board, 0, False, alpha, beta, row=i, col=j)
                     board[i][j] = ''
                     if bestMove is None or score > bestMove[0]:
                         bestMove = (score, i, j)
         return (bestMove[1], bestMove[2])
 
-    def minimax(self, board, depth, isMaximizing, alpha, beta):
-        result = self.check_winner(board)
+    def minimax(self, board, depth, isMaximizing, alpha, beta, row=None, col=None):
+        result = self.check_winner(board, row, col)
         if result is not None:
             if result == self.symbol:
                 return 1
@@ -45,7 +46,7 @@ class Player:
                     if board[i][j] == '':
                         board[i][j] = self.symbol
                         score = self.minimax(
-                            board, depth + 1, False, alpha, beta)
+                            board, depth + 1, False, alpha, beta, row=i, col=j)
                         board[i][j] = ''
                         bestScore = max(score, bestScore)
                         alplha = max(alpha, score)
@@ -59,7 +60,7 @@ class Player:
                     if board[i][j] == '':
                         board[i][j] = 'O' if self.symbol == 'X' else 'X'
                         score = self.minimax(
-                            board, depth + 1, True, alpha, beta)
+                            board, depth + 1, True, alpha, beta, row=i, col=j)
                         board[i][j] = ''
                         bestScore = min(score, bestScore)
                         beta = min(beta, score)
@@ -67,24 +68,25 @@ class Player:
                             return bestScore
             return bestScore
 
-    def check_winner(self, board):
-        # Check rows
-        for i in range(3):
-            if board[i][0] == board[i][1] == board[i][2] != '':
-                return board[i][0]
+    def check_winner(self, board, row, col):
+        # Check the row where the last move was made
+        if board[row][0] == board[row][1] == board[row][2]:
+            return board[row][0]
 
-        # Check columns
-        for i in range(3):
-            if board[0][i] == board[1][i] == board[2][i] != '':
-                return board[0][i]
+        # Check the column where the last move was made
+        if board[0][col] == board[1][col] == board[2][col]:
+            return board[0][col]
 
-        # Check diagonals
-        if board[0][0] == board[1][1] == board[2][2] != '':
-            return board[0][0]
-        if board[0][2] == board[1][1] == board[2][0] != '':
-            return board[0][2]
+        # Check the diagonal where the last move was made
+        if row == col:  # Move was made on the left diagonal
+            if board[0][0] == board[1][1] == board[2][2]:
+                return board[0][0]
 
-        # Check tie
+        if row + col == 2:  # Move was made on the right diagonal
+            if board[0][2] == board[1][1] == board[2][0]:
+                return board[0][2]
+
+        # Check if the board is full
         if np.all(board != ''):
             return 'tie'
 

@@ -18,7 +18,7 @@ class TicTacToe:
             self.board[row][col] = player.symbol
 
             # Check if there is a winner
-            if self.is_winner():
+            if self.is_winner(row, col):
                 # Create a custom event
                 event = pygame.event.Event(
                     WINNER_EVENT, message=f"{player.name} won!", win_positions=self.win_position)
@@ -39,28 +39,27 @@ class TicTacToe:
     def get_next_player(self):
         return self.players[0] if self.current_player == self.players[1] else self.players[1]
 
-    def is_winner(self):
-        # Check rows
-        for i in range(3):
-            row = self.board[i]
-            if row[0] == row[1] == row[2] != '':
-                self.win_position = f"r:{i}"
+    def is_winner(self, row, col):
+        # Check row only if the last move was in that row
+        if self.board[row][0] == self.board[row][1] == self.board[row][2] != '':
+            self.win_position = f"r:{row}"
+            return True
+
+        # Check column only if the last move was in that column
+        if self.board[0][col] == self.board[1][col] == self.board[2][col] != '':
+            self.win_position = f"c:{col}"
+            return True
+
+        # Check diagonals only if the last move was in that diagonal
+        if row == col:  # Left diagonal
+            if self.board[0][0] == self.board[1][1] == self.board[2][2] != '':
+                self.win_position = "d:0"
                 return True
 
-        # Check columns
-        for i in range(3):
-            col = self.board[:, i]
-            if col[0] == col[1] == col[2] != '':
-                self.win_position = f"c:{i}"
+        if row + col == 2:  # Right diagonal
+            if self.board[0][2] == self.board[1][1] == self.board[2][0] != '':
+                self.win_position = "d:1"
                 return True
-
-        # Check diagonals
-        if self.board[0][0] == self.board[1][1] == self.board[2][2] != '':
-            self.win_position = "d:0"
-            return True
-        elif self.board[0][2] == self.board[1][1] == self.board[2][0] != '':
-            self.win_position = "d:1"
-            return True
 
         return False
 
