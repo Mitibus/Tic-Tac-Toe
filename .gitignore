@@ -1,0 +1,4 @@
+build/*
+dist/*
+tictactoe/*
+main.spec
