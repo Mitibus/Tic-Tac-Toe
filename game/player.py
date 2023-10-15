@@ -7,6 +7,7 @@ class Player:
         self.name = name
         self.symbol = symbol
         self.is_ai = is_ai
+        self.memorisation = {}
 
     def make_move(self, game, row=None, col=None):
         if self.is_ai:
@@ -30,13 +31,21 @@ class Player:
         return (bestMove[1], bestMove[2])
 
     def minimax(self, board, depth, isMaximizing, alpha, beta, row=None, col=None):
+        boad_str = np.array2string(board)
+
+        if boad_str in self.memorisation:
+            return self.memorisation[boad_str]
+
         result = self.check_winner(board, row, col)
         if result is not None:
             if result == self.symbol:
+                self.memorisation[boad_str] = 1
                 return 1
             elif result == 'tie':
+                self.memorisation[boad_str] = 0
                 return 0
             else:
+                self.memorisation[boad_str] = -1
                 return -1
 
         if isMaximizing:
@@ -52,6 +61,7 @@ class Player:
                         alplha = max(alpha, score)
                         if beta <= alpha:
                             return bestScore
+            self.memorisation[boad_str] = bestScore
             return bestScore
         else:
             bestScore = np.inf
@@ -66,6 +76,7 @@ class Player:
                         beta = min(beta, score)
                         if beta <= alpha:
                             return bestScore
+            self.memorisation[boad_str] = bestScore
             return bestScore
 
     def check_winner(self, board, row, col):
