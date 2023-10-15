@@ -16,17 +16,19 @@ class Player:
 
     def bestMove(self, board):
         bestMove = None
+        alpha = -np.inf
+        beta = np.inf
         for i in range(3):
             for j in range(3):
                 if board[i][j] == '':
                     board[i][j] = self.symbol
-                    score = self.minimax(board, 0, False)
+                    score = self.minimax(board, 0, False, alpha, beta)
                     board[i][j] = ''
                     if bestMove is None or score > bestMove[0]:
                         bestMove = (score, i, j)
         return (bestMove[1], bestMove[2])
 
-    def minimax(self, board, depth, isMaximizing):
+    def minimax(self, board, depth, isMaximizing, alpha, beta):
         result = self.check_winner(board)
         if result is not None:
             if result == self.symbol:
@@ -42,9 +44,13 @@ class Player:
                 for j in range(3):
                     if board[i][j] == '':
                         board[i][j] = self.symbol
-                        score = self.minimax(board, depth + 1, False)
+                        score = self.minimax(
+                            board, depth + 1, False, alpha, beta)
                         board[i][j] = ''
                         bestScore = max(score, bestScore)
+                        alplha = max(alpha, score)
+                        if beta <= alpha:
+                            return bestScore
             return bestScore
         else:
             bestScore = np.inf
@@ -52,9 +58,13 @@ class Player:
                 for j in range(3):
                     if board[i][j] == '':
                         board[i][j] = 'O' if self.symbol == 'X' else 'X'
-                        score = self.minimax(board, depth + 1, True)
+                        score = self.minimax(
+                            board, depth + 1, True, alpha, beta)
                         board[i][j] = ''
                         bestScore = min(score, bestScore)
+                        beta = min(beta, score)
+                        if beta <= alpha:
+                            return bestScore
             return bestScore
 
     def check_winner(self, board):
