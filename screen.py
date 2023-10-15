@@ -42,7 +42,7 @@ class Screen:
             text_color=MAIN_COLOR,
             hovered_color=BUTTON_HOVERED_COLOR,
             font_size=50,
-            on_click_function=self.start_game
+            on_click_function=self.start_game_2_players
         )
 
         ai_button = Button(
@@ -54,7 +54,7 @@ class Screen:
             text_color=MAIN_COLOR,
             hovered_color=BUTTON_HOVERED_COLOR,
             font_size=50,
-            on_click_function=self.start_game
+            on_click_function=self.start_game_against_ai
         )
 
         quit_button = Button(
@@ -70,6 +70,14 @@ class Screen:
         )
 
         self.buttons.add(human_button, ai_button, quit_button)
+
+    def start_game_2_players(self):
+        self.is_playing_against_ai = False
+        self.start_game()
+
+    def start_game_against_ai(self):
+        self.is_playing_against_ai = True
+        self.start_game()
 
     def play_screen(self):
         # Set background color
@@ -110,7 +118,6 @@ class Screen:
     def start_game(self):
         self.screen = pygame.display.set_mode((600, 800))
         self.buttons.empty()
-        self.is_playing_against_ai = True
         self.state = self.play_screen
 
         if self.is_playing_against_ai:
@@ -140,6 +147,10 @@ class Screen:
                     # Make the move
                     self.game.current_player.make_move(
                         self.game, row=row, col=col)
+                elif not self.is_playing_against_ai:
+                    self.game.current_player.make_move(
+                        self.game, row=row, col=col)
+
         elif self.state == self.end_game_screen:
             self.screen = pygame.display.set_mode((1280, 720))
             self.state = self.main_screen
