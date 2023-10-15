@@ -32,7 +32,6 @@ class Player:
 
     def minimax(self, board, depth, isMaximizing, alpha, beta, row=None, col=None):
         boad_str = np.array2string(board)
-
         if boad_str in self.memorisation:
             return self.memorisation[boad_str]
 
@@ -48,34 +47,37 @@ class Player:
                 self.memorisation[boad_str] = -1
                 return -1
 
+        preferred_moves = [(1, 1), (0, 0), (0, 2), (2, 0),
+                           (2, 2), (0, 1), (1, 0), (1, 2), (2, 1)]
+
         if isMaximizing:
             bestScore = -np.inf
-            for i in range(3):
-                for j in range(3):
-                    if board[i][j] == '':
-                        board[i][j] = self.symbol
-                        score = self.minimax(
-                            board, depth + 1, False, alpha, beta, row=i, col=j)
-                        board[i][j] = ''
-                        bestScore = max(score, bestScore)
-                        alplha = max(alpha, score)
-                        if beta <= alpha:
-                            return bestScore
+            for move in preferred_moves:
+                i, j = move
+                if board[i][j] == '':
+                    board[i][j] = self.symbol
+                    score = self.minimax(
+                        board, depth + 1, False, alpha, beta, row=i, col=j)
+                    board[i][j] = ''
+                    bestScore = max(score, bestScore)
+                    alplha = max(alpha, score)
+                    if beta <= alpha:
+                        return bestScore
             self.memorisation[boad_str] = bestScore
             return bestScore
         else:
             bestScore = np.inf
-            for i in range(3):
-                for j in range(3):
-                    if board[i][j] == '':
-                        board[i][j] = 'O' if self.symbol == 'X' else 'X'
-                        score = self.minimax(
-                            board, depth + 1, True, alpha, beta, row=i, col=j)
-                        board[i][j] = ''
-                        bestScore = min(score, bestScore)
-                        beta = min(beta, score)
-                        if beta <= alpha:
-                            return bestScore
+            for move in preferred_moves:
+                i, j = move
+                if board[i][j] == '':
+                    board[i][j] = 'O' if self.symbol == 'X' else 'X'
+                    score = self.minimax(
+                        board, depth + 1, True, alpha, beta, row=i, col=j)
+                    board[i][j] = ''
+                    bestScore = min(score, bestScore)
+                    beta = min(beta, score)
+                    if beta <= alpha:
+                        return bestScore
             self.memorisation[boad_str] = bestScore
             return bestScore
 
